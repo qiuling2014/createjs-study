@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://cdn.h5case.com.cn/case/luckin-coffee/v-1.0.3/2/1/css/skin.css">
+  </head>
+  <body>
+    <canvas id="demoCanvas" class="whole auto-x auto-y"></canvas>
+    <script src="https://cdn.h5case.com.cn/case/luckin-coffee/v-1.0.3/2/1/js/jquery-2.1.1.min.js"></script>
+    <script src="https://code.createjs.com/1.0.0/createjs.min.js"></script>
+    <script>
+      let stage, loader;
+      window.page = {
+        clientWidth: document.documentElement.clientWidth > 640 ? 640 : document.documentElement.clientWidth,
+        clientHeight: document.documentElement.clientHeight,
+        setScale() {
+          var h = this.clientWidth*1040/640;
+          if ( this.clientHeight < h ){
+            page.scale = this.clientHeight/h;
+            $("body").removeClass("need-move");
+            $("body").addClass("need-scale");
+            $(".scale").each(function(){
+              this.style.transform = "scale("+ page.scale +")";
+              this.style.webkitTransform = "scale("+ page.scale +")";
+            })
+          }
+          else{
+            page.scale = 1;
+            $("body").removeClass("need-scale");
+            $("body").addClass("need-move");
+            $(".scale").each(function(){
+              this.style.transform = "";
+              this.style.webkitTransform = "";
+            })
+          }
+        },
+        init() {
+          stage = new createjs.StageGL("demoCanvas");
+          // 定义静态资源
+          let manifest = [{
+            src: "bg.png", id: "bg"}, {    
+            src: "date.png", id: "date"}, { 
+            src: "1.png", id: "icon-1"}, { 
+            src: "2.png", id: "icon-2"}, { 
+            src: "3.png", id: "icon-3"}, { 
+            src: "4.png", id: "icon-4"
+          }]; 
+          loader = new createjs.LoadQueue(false);
+          // 添加"资源加载完成"事件
+          loader.addEventListener("complete", this.handleComplete);
+          // 加载资源
+          loader.loadManifest(manifest, true, "./assets/img/");  // (manifest, loadNow, basePath)  
+        },
+        handleComplete() {
+          let bg = new createjs.Bitmap(loader.getResult("bg"));
+          bg.x = 50;
+          bg.y = 50;
+          let date = new createjs.SpriteSheet({
+            framerate: 30,      // 帧率 FPS
+            "images": [loader.getResult("date")],      // 雪碧图原图
+            "frames": [
+              [469,0,32,46],
+              [0,0,28,46],
+              [50,0,30,46],
+              [104,0,28,46],
+              [153,0,33,46],
+              [209,0,28,46],
+              [259,0,31,46],
+              [311,0,31,46],
+              [363,0,32,46],
+              [415,0,32,46]
+            ],
+            "animations": {
+              "0":[0],
+              "1":[1],
+              "2":[2],
+              "3":[3],
+              "4":[4],
+              "5":[5],
+              "6":[6],
+              "7":[7],
+              "8":[8],
+              "9":[9]
+            }
+          });
+
+          stage.addChild(date,bg);
+          createjs.Ticker.timingMode = createjs.Ticker.RAF;     // RAF / RAF_SYNCHED / TIMEOUT
+          console.log(this)
+          createjs.Ticker.addEventListener("tick", page.tick);
+        },
+        tick(event) {
+          stage.update();
+        }
+      }
+      $(function(){
+        page.init();
+      });
+    </script>
+  </body>
+</html>
